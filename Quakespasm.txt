@@ -1,7 +1,7 @@
   QuakeSpasm
 
   ______________________________________________________________________
-
+ emcmake cmake .. && make -j12
 
   Page last edited: June 2024.
 

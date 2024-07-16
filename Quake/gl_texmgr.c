@@ -570,7 +570,7 @@ void TexMgr_RecalcWarpImageSize (void)
 	// after vid_restart TexMgr_ReloadImage reloads textures
 	// to tx->source_width/source_height, which might not match oldsize.
 	// fixes: https://sourceforge.net/p/quakespasm/bugs/13/
-	
+
 	//
 	// resize the textures in opengl
 	//

@@ -20,18 +20,13 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#endif
 
 #include "quakedef.h"
-#if defined(SDL_FRAMEWORK) || defined(NO_SDL_CONFIG)
-#if defined(USE_SDL2)
-#include <SDL2/SDL.h>
-#else
-#include <SDL/SDL.h>
-#endif
-#else
-#include "SDL.h"
-#endif
 #include <stdio.h>
+
 
 static void Sys_AtExit (void)
 {
@@ -60,73 +55,12 @@ static void Sys_InitSDL (void)
 
 static quakeparms_t	parms;
 
-// On OS X we call SDL_main from the launcher, but SDL2 doesn't redefine main
-// as SDL_main on OS X anymore, so we do it ourselves.
-#if defined(USE_SDL2) && defined(__APPLE__)
-#define main SDL_main
-#endif
 
-int main(int argc, char *argv[])
-{
-	int		t;
-	double		time, oldtime, newtime;
 
-	host_parms = &parms;
-	parms.basedir = ".";
+static double time, oldtime, newtime;
 
-	parms.argc = argc;
-	parms.argv = argv;
 
-	parms.errstate = 0;
-
-	COM_InitArgv(parms.argc, parms.argv);
-
-	isDedicated = (COM_CheckParm("-dedicated") != 0);
-
-	Sys_InitSDL ();
-
-	Sys_Init();
-
-	Sys_Printf("Initializing QuakeSpasm v%s\n", QUAKESPASM_VER_STRING);
-
-	parms.memsize = DEFAULT_MEMORY;
-	if (COM_CheckParm("-heapsize"))
-	{
-		t = COM_CheckParm("-heapsize") + 1;
-		if (t < com_argc)
-			parms.memsize = Q_atoi(com_argv[t]) * 1024;
-	}
-
-	parms.membase = malloc (parms.memsize);
-
-	if (!parms.membase)
-		Sys_Error ("Not enough memory free; check disk space\n");
-
-	Sys_Printf("Host_Init\n");
-	Host_Init();
-
-	oldtime = Sys_DoubleTime();
-	if (isDedicated)
-	{
-		while (1)
-		{
-			newtime = Sys_DoubleTime ();
-			time = newtime - oldtime;
-
-			while (time < sys_ticrate.value )
-			{
-				SDL_Delay(1);
-				newtime = Sys_DoubleTime ();
-				time = newtime - oldtime;
-			}
-
-			Host_Frame (time);
-			oldtime = newtime;
-		}
-	}
-	else
-	while (1)
-	{
+void mainloop(void){
 		/* If we have no input focus at all, sleep a bit */
 		if (!VID_HasMouseOrInputFocus() || cl.paused)
 		{
@@ -151,7 +85,50 @@ int main(int argc, char *argv[])
 			SDL_Delay(1);
 
 		oldtime = newtime;
+}
+
+int main(int argc, char *argv[])
+{
+	int		t;
+	host_parms = &parms;
+	parms.basedir = ".";
+
+	parms.argc = argc;
+	parms.argv = argv;
+
+	parms.errstate = 0;
+
+	COM_InitArgv(parms.argc, parms.argv);
+
+	isDedicated = (COM_CheckParm("-dedicated") != 0);
+	Sys_Printf("Dedicated: %d\n", isDedicated);
+	Sys_InitSDL ();
+
+	Sys_Init();
+
+	Sys_Printf("Initializing QuakeSpasm v%s\n", QUAKESPASM_VER_STRING);
+
+	parms.memsize = DEFAULT_MEMORY;
+	if (COM_CheckParm("-heapsize"))
+	{
+		t = COM_CheckParm("-heapsize") + 1;
+		if (t < com_argc)
+			parms.memsize = Q_atoi(com_argv[t]) * 1024;
 	}
+
+	parms.membase = malloc (parms.memsize);
+
+	if (!parms.membase)
+		Sys_Error ("Not enough memory free; check disk space\n");
+
+	Sys_Printf("Host_Init\n");
+	Host_Init();
+	oldtime = Sys_DoubleTime();
+	#ifdef __EMSCRIPTEN__
+    emscripten_set_main_loop(mainloop, 30, 1);
+    #else
+    while (1) { mainloop(); }
+    #endif
 
 	return 0;
 }

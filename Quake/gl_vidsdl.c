@@ -26,20 +26,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "cfgfile.h"
 #include "bgmusic.h"
 #include "resource.h"
-#if defined(SDL_FRAMEWORK) || defined(NO_SDL_CONFIG)
-#if defined(USE_SDL2)
-#include <SDL2/SDL.h>
-#else
-#include <SDL/SDL.h>
-#endif
-#else
-#include "SDL.h"
-#endif
+#include "gl4esinit.h"
 
-//ericw -- for putting the driver into multithreaded mode
-#ifdef __APPLE__
-#include <OpenGL/OpenGL.h>
-#endif
+
 
 #define MAX_MODE_LIST	600 //johnfitz -- was 30
 #define MAX_BPPS_LIST	5
@@ -400,7 +389,7 @@ static int VID_GetCurrentBPP (void)
 /*
 ====================
 VID_GetFullscreen
- 
+
 returns true if we are in regular fullscreen or "desktop fullscren"
 ====================
 */
@@ -416,7 +405,7 @@ static qboolean VID_GetFullscreen (void)
 /*
 ====================
 VID_GetDesktopFullscreen
- 
+
 returns true if we are specifically in "desktop fullscreen" mode
 ====================
 */
@@ -584,7 +573,6 @@ static qboolean VID_SetMode (int width, int height, int refreshrate, int bpp, qb
 #if defined(USE_SDL2)
 	int		previous_display;
 #endif
-
 	// so Con_Printfs don't mess us up by forcing vid and snd updates
 	temp = scr_disabled_for_loading;
 	scr_disabled_for_loading = true;
@@ -618,9 +606,10 @@ static qboolean VID_SetMode (int width, int height, int refreshrate, int bpp, qb
 	{
 		flags = SDL_WINDOW_OPENGL | SDL_WINDOW_HIDDEN;
 
+
 		if (vid_borderless.value)
 			flags |= SDL_WINDOW_BORDERLESS;
-
+		initialize_gl4es();
 		draw_context = SDL_CreateWindow (caption, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, flags);
 		if (!draw_context) { // scale back fsaa
 			SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 0);
@@ -1034,7 +1023,7 @@ static void GL_CheckExtensions (void)
 		{
 			Con_Printf("FOUND: ARB_multitexture\n");
 			gl_mtexable = true;
-			
+
 			glGetIntegerv(GL_MAX_TEXTURE_UNITS, &gl_max_texture_units);
 			Con_Printf("GL_MAX_TEXTURE_UNITS: %d\n", (int)gl_max_texture_units);
 		}
@@ -1363,7 +1352,7 @@ static void GL_Init (void)
 	Con_SafePrintf ("GL_VENDOR: %s\n", gl_vendor);
 	Con_SafePrintf ("GL_RENDERER: %s\n", gl_renderer);
 	Con_SafePrintf ("GL_VERSION: %s\n", gl_version);
-	
+
 	if (gl_version == NULL || sscanf(gl_version, "%d.%d", &gl_version_major, &gl_version_minor) < 2)
 	{
 		gl_version_major = 0;
@@ -1782,7 +1771,6 @@ void	VID_Init (void)
 	// set window icon
 	PL_SetWindowIcon();
 #endif
-
 	VID_SetMode (width, height, refreshrate, bpp, fullscreen);
 
 #if defined(USE_SDL2)

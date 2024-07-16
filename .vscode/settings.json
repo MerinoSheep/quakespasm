@@ -1,0 +1,11 @@
+{
+    "files.associations": {
+        "quakedef.h": "c",
+        "q_stdinc.h": "c",
+        "server.h": "c",
+        "gl.h": "c",
+        "cstring": "c",
+        "xstring": "c",
+        "stdio.h": "c"
+    }
+}

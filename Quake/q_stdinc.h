@@ -26,8 +26,12 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#ifndef QSTDINC_H
-#define QSTDINC_H
+#ifndef __QSTDINC_H
+#define __QSTDINC_H
+
+#if defined(_WIN32) && !defined(MICROSOFT_WINDOWS_WINBASE_H_DEFINE_INTERLOCKED_CPLUSPLUS_OVERLOADS)
+#define MICROSOFT_WINDOWS_WINBASE_H_DEFINE_INTERLOCKED_CPLUSPLUS_OVERLOADS 0
+#endif
 
 #include <sys/types.h>
 #include <stddef.h>
@@ -65,6 +69,8 @@
 #include <stdarg.h>
 #include <string.h>
 #include <float.h>
+#include <SDL_endian.h>
+
 
 /*==========================================================================*/
 
@@ -126,23 +132,23 @@ COMPILE_TIME_ASSERT(enum, sizeof(THE_DUMMY_ENUM) == sizeof(int));
 
 typedef unsigned char		byte;
 
-/* some structures have qboolean members and the x86 asm code expect
- * those members to be 4 bytes long.  i.e.: qboolean must be 32 bits.  */
-typedef int	qboolean;
 #undef true
 #undef false
-#if !defined(__cplusplus)
-#if defined __STDC_VERSION__ && (__STDC_VERSION__ >= 199901L)
-#include <stdbool.h>
+#if defined(__cplusplus)
+/* some structures have qboolean members and the x86 asm code expect
+ * those members to be 4 bytes long. therefore, qboolean must be 32
+ * bits and it can NOT be binary compatible with the 8 bit C++ bool.  */
+typedef int	qboolean;
+COMPILE_TIME_ASSERT(falsehood, (0 == false));
+COMPILE_TIME_ASSERT(truth, (1  == true));
 #else
-enum {
+typedef enum {
 	false = 0,
 	true  = 1
-};
-#endif
-#endif /* */
+} qboolean;
 COMPILE_TIME_ASSERT(falsehood, ((1 != 1) == false));
 COMPILE_TIME_ASSERT(truth, ((1 == 1) == true));
+#endif
 COMPILE_TIME_ASSERT(qboolean, sizeof(qboolean) == 4);
 
 /*==========================================================================*/
@@ -156,6 +162,10 @@ typedef int	fixed4_t;
 typedef int	fixed8_t;
 typedef int	fixed16_t;
 
+/* natvis helpers */
+typedef struct { float data[2]; } float2_t;
+typedef struct { float data[3]; } float3_t;
+typedef struct { float data[4]; } float4_t;
 
 /*==========================================================================*/
 
@@ -242,6 +252,18 @@ typedef ptrdiff_t	ssize_t;
 #define inline __inline
 #endif	/* _MSC_VER */
 
+#if defined(_MSC_VER)
+#define THREAD_LOCAL __declspec(thread)
+#elif (defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L))
+#define THREAD_LOCAL _Thread_local
+#elif defined(__GNUC__)
+#define THREAD_LOCAL __thread
+#else
+#error TLS not supported
+#endif
+
 /*==========================================================================*/
 
-#endif	/* QSTDINC_H */
+
+#endif	/* __QSTDINC_H */
+

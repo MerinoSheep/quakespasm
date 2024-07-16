@@ -22,15 +22,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "quakedef.h"
-#if defined(SDL_FRAMEWORK) || defined(NO_SDL_CONFIG)
-#if defined(USE_SDL2)
-#include <SDL2/SDL.h>
-#else
-#include <SDL/SDL.h>
-#endif
-#else
-#include "SDL.h"
-#endif
 
 static qboolean windowhasfocus = true;	//just in case sdl fails to tell us...
 static qboolean	textmode;
@@ -293,22 +284,22 @@ void IN_StartupJoystick (void)
 	int nummappings;
 	char controllerdb[MAX_OSPATH];
 	SDL_GameController *gamecontroller;
-	
+
 	if (COM_CheckParm("-nojoy"))
 		return;
-	
+
 	if (SDL_InitSubSystem(SDL_INIT_GAMECONTROLLER) == -1 )
 	{
 		Con_Warning("could not initialize SDL Game Controller\n");
 		return;
 	}
-	
+
 	// Load additional SDL2 controller definitions from gamecontrollerdb.txt
 	q_snprintf (controllerdb, sizeof(controllerdb), "%s/gamecontrollerdb.txt", com_basedir);
 	nummappings = SDL_GameControllerAddMappingsFromFile(controllerdb);
 	if (nummappings > 0)
 		Con_Printf("%d mappings loaded from gamecontrollerdb.txt\n", nummappings);
-	
+
 	// Also try host_parms->userdir
 	if (host_parms->userdir != host_parms->basedir)
 	{
@@ -328,7 +319,7 @@ void IN_StartupJoystick (void)
 			if (gamecontroller)
 			{
 				Con_Printf("detected controller: %s\n", controllername != NULL ? controllername : "NULL");
-				
+
 				joy_active_instaceid = SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(gamecontroller));
 				joy_active_controller = gamecontroller;
 				break;
@@ -467,12 +458,12 @@ static joyaxis_t IN_ApplyEasing(joyaxis_t axis, float exponent)
 	joyaxis_t result = {0};
 	vec_t eased_magnitude;
 	vec_t magnitude = IN_AxisMagnitude(axis);
-	
+
 	if (magnitude == 0)
 		return result;
-	
+
 	eased_magnitude = powf(magnitude, exponent);
-	
+
 	result.x = axis.x * (eased_magnitude / magnitude);
 	result.y = axis.y * (eased_magnitude / magnitude);
 	return result;
@@ -497,7 +488,7 @@ static joyaxis_t IN_ApplyDeadzone(joyaxis_t axis, float deadzone, float outer_th
 {
 	joyaxis_t result = {0};
 	vec_t magnitude = IN_AxisMagnitude(axis);
-	
+
 	if ( magnitude > deadzone ) {
 		// rescale the magnitude so deadzone becomes 0, and 1-outer_threshold becomes 1
 		const vec_t new_magnitude = q_min(1.0, (magnitude - deadzone) / (1.0 - deadzone - outer_threshold));
@@ -505,7 +496,7 @@ static joyaxis_t IN_ApplyDeadzone(joyaxis_t axis, float deadzone, float outer_th
 		result.x = axis.x * scale;
 		result.y = axis.y * scale;
 	}
-	
+
 	return result;
 }
 
@@ -550,7 +541,7 @@ static void IN_JoyKeyEvent(qboolean wasdown, qboolean isdown, int key, double *t
 {
 	// we can't use `realtime` for key repeats because it is not monotomic
 	const double currenttime = Sys_DoubleTime();
-	
+
 	if (wasdown)
 	{
 		if (isdown)
@@ -592,10 +583,10 @@ void IN_Commands (void)
 	int i;
 	const float stickthreshold = 0.9;
 	const float triggerthreshold = joy_deadzone_trigger.value;
-	
+
 	if (!joy_enable.value)
 		return;
-	
+
 	if (!joy_active_controller)
 		return;
 
@@ -604,18 +595,18 @@ void IN_Commands (void)
 	{
 		qboolean newstate = SDL_GameControllerGetButton(joy_active_controller, (SDL_GameControllerButton)i);
 		qboolean oldstate = joy_buttonstate.buttondown[i];
-		
+
 		joy_buttonstate.buttondown[i] = newstate;
-		
+
 		// NOTE: This can cause a reentrant call of IN_Commands, via SCR_ModalMessage when confirming a new game.
 		IN_JoyKeyEvent(oldstate, newstate, IN_KeyForControllerButton((SDL_GameControllerButton)i), &joy_buttontimer[i]);
 	}
-	
+
 	for (i = 0; i < SDL_CONTROLLER_AXIS_MAX; i++)
 	{
 		newaxisstate.axisvalue[i] = SDL_GameControllerGetAxis(joy_active_controller, (SDL_GameControllerAxis)i) / 32768.0f;
 	}
-	
+
 	// emit emulated arrow keys so the analog sticks can be used in the menu
 	if (key_dest != key_game)
 	{
@@ -624,11 +615,11 @@ void IN_Commands (void)
 		IN_JoyKeyEvent(joy_axisstate.axisvalue[SDL_CONTROLLER_AXIS_LEFTY] < -stickthreshold, newaxisstate.axisvalue[SDL_CONTROLLER_AXIS_LEFTY] < -stickthreshold, K_UPARROW, &joy_emulatedkeytimer[2]);
 		IN_JoyKeyEvent(joy_axisstate.axisvalue[SDL_CONTROLLER_AXIS_LEFTY] > stickthreshold,  newaxisstate.axisvalue[SDL_CONTROLLER_AXIS_LEFTY] > stickthreshold, K_DOWNARROW, &joy_emulatedkeytimer[3]);
 	}
-	
+
 	// emit emulated keys for the analog triggers
 	IN_JoyKeyEvent(joy_axisstate.axisvalue[SDL_CONTROLLER_AXIS_TRIGGERLEFT] > triggerthreshold,  newaxisstate.axisvalue[SDL_CONTROLLER_AXIS_TRIGGERLEFT] > triggerthreshold, K_LTRIGGER, &joy_emulatedkeytimer[4]);
 	IN_JoyKeyEvent(joy_axisstate.axisvalue[SDL_CONTROLLER_AXIS_TRIGGERRIGHT] > triggerthreshold, newaxisstate.axisvalue[SDL_CONTROLLER_AXIS_TRIGGERRIGHT] > triggerthreshold, K_RTRIGGER, &joy_emulatedkeytimer[5]);
-	
+
 	joy_axisstate = newaxisstate;
 #endif
 }
@@ -648,25 +639,25 @@ void IN_JoyMove (usercmd_t *cmd)
 
 	if (!joy_enable.value)
 		return;
-	
+
 	if (!joy_active_controller)
 		return;
 
 	if (cl.paused || key_dest != key_game)
 		return;
-	
+
 	moveRaw.x = joy_axisstate.axisvalue[SDL_CONTROLLER_AXIS_LEFTX];
 	moveRaw.y = joy_axisstate.axisvalue[SDL_CONTROLLER_AXIS_LEFTY];
 	lookRaw.x = joy_axisstate.axisvalue[SDL_CONTROLLER_AXIS_RIGHTX];
 	lookRaw.y = joy_axisstate.axisvalue[SDL_CONTROLLER_AXIS_RIGHTY];
-	
+
 	if (joy_swapmovelook.value)
 	{
 		joyaxis_t temp = moveRaw;
 		moveRaw = lookRaw;
 		lookRaw = temp;
 	}
-	
+
 	moveDeadzone = IN_ApplyDeadzone(moveRaw, joy_deadzone_move.value, joy_outer_threshold_move.value);
 	lookDeadzone = IN_ApplyDeadzone(lookRaw, joy_deadzone_look.value, joy_outer_threshold_look.value);
 
@@ -849,7 +840,7 @@ static inline int IN_SDL_KeysymToQuakeKey(SDLKey sym)
 	case SDLK_BREAK: return K_PAUSE;
 	case SDLK_PAUSE: return K_PAUSE;
 
-	case SDLK_WORLD_18: return '~'; // the '²' key
+	case SDLK_WORLD_18: return '~'; // the 'ï¿½' key
 
 	default: return 0;
 	}
@@ -1146,7 +1137,7 @@ void IN_SendKeyEvents (void)
 			Con_DPrintf("Ignoring SDL_CONTROLLERDEVICEREMAPPED\n");
 			break;
 #endif
-				
+
 		case SDL_QUIT:
 			CL_Disconnect ();
 			Sys_Quit ();

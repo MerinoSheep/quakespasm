@@ -223,18 +223,9 @@ typedef struct
 #include "server.h"
 
 #include "platform.h"
-#if defined(SDL_FRAMEWORK) || defined(NO_SDL_CONFIG)
-#if defined(USE_SDL2)
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_opengl.h>
-#else
-#include <SDL/SDL.h>
-#include <SDL/SDL_opengl.h>
-#endif
-#else
-#include "SDL.h"
-#include "SDL_opengl.h"
-#endif
+#include "GL/gl.h"
+
 #ifndef APIENTRY
 #define	APIENTRY
 #endif
@@ -323,6 +314,8 @@ void DemoList_Init (void);
 
 void ExtraMaps_NewGame (void);
 void DemoList_Rebuild (void);
+
+// void initialize_gl4es();
 
 extern int		current_skill;	// skill level for currently loaded level (in case
 					//  the user changes the cvar while the level is
