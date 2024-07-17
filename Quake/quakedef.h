@@ -249,7 +249,6 @@ typedef struct
 #include "input.h"
 #include "keys.h"
 #include "menu.h"
-#include "cdaudio.h"
 #include "glquake.h"
 
 

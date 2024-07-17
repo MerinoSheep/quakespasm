@@ -758,7 +758,6 @@ void _Host_Frame (float time)
 	else
 		S_Update (vec3_origin, vec3_origin, vec3_origin, vec3_origin);
 
-	CDAudio_Update();
 
 	if (host_speeds.value)
 	{
@@ -871,7 +870,6 @@ void Host_Init (void)
 		SCR_Init ();
 		R_Init ();
 		S_Init ();
-		CDAudio_Init ();
 		BGM_Init();
 		Sbar_Init ();
 		CL_Init ();
@@ -935,7 +933,6 @@ void Host_Shutdown(void)
 		if (con_initialized)
 			History_Shutdown ();
 		BGM_Shutdown();
-		CDAudio_Shutdown ();
 		S_Shutdown ();
 		IN_Shutdown ();
 		VID_Shutdown();

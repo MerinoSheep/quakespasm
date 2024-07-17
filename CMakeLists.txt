@@ -66,10 +66,6 @@ set(SYSOBJ_SND
     Quake/snd_sdl.c
 )
 
-set(SYSOBJ_CDA
-    Quake/cd_sdl.c
-)
-
 set(SYSOBJ_INPUT
     Quake/in_sdl.c
 )
@@ -123,7 +119,6 @@ set(SOURCES
     ${SYSOBJ_INPUT}
     ${COMOBJ_SND}
     ${SYSOBJ_SND}
-    ${SYSOBJ_CDA}
     ${SYSOBJ_NET}
     Quake/net_dgrm.c
     Quake/net_loop.c

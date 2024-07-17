@@ -1195,12 +1195,10 @@ void CL_ParseServerMessage (void)
 			cl.paused = MSG_ReadByte ();
 			if (cl.paused)
 			{
-				CDAudio_Pause ();
 				BGM_Pause ();
 			}
 			else
 			{
-				CDAudio_Resume ();
 				BGM_Resume ();
 			}
 			break;
