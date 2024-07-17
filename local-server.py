@@ -13,7 +13,8 @@ class CustomHTTPRequestHandler(SimpleHTTPRequestHandler):
         super().end_headers()
 
 # Define the directory you want to serve
-directory_to_serve = "C:/Users/bizom/Documents/GitHub/quakespasm/build"
+project_root = os.path.dirname(os.path.abspath(__file__))  # Gets the directory of the current file
+directory_to_serve = os.path.join(project_root, "build")
 os.chdir(directory_to_serve)
 
 # Define the HTTP server and the port

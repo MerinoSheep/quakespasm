@@ -313,10 +313,10 @@ void CL_ParseServerInfo (void)
 	if (cl.protocol == PROTOCOL_RMQ)
 	{
 		const unsigned int supportedflags = (PRFL_SHORTANGLE | PRFL_FLOATANGLE | PRFL_24BITCOORD | PRFL_FLOATCOORD | PRFL_EDICTSCALE | PRFL_INT32COORD);
-		
+
 		// mh - read protocol flags from server so that we know what protocol features to expect
 		cl.protocolflags = (unsigned int) MSG_ReadLong ();
-		
+
 		if (0 != (cl.protocolflags & (~supportedflags)))
 		{
 			Con_Warning("PROTOCOL_RMQ protocolflags %i contains unsupported flags\n", cl.protocolflags);
@@ -698,7 +698,7 @@ Server information pertaining to this client only
 */
 void CL_ParseClientdata (void)
 {
-	int		i, j;
+	int		i;
 	int		bits; //johnfitz
 
 	bits = (unsigned short)MSG_ReadShort (); //johnfitz -- read bits here isntead of in CL_ParseServerMessage()
@@ -748,8 +748,8 @@ void CL_ParseClientdata (void)
 	if (cl.items != i)
 	{	// set flash times
 		Sbar_Changed ();
-		for (j = 0; j < 32; j++)
-			if ( (i & (1<<j)) && !(cl.items & (1<<j)))
+		for (uint32_t j = 0; j < 32; j++)
+			if ( (i & (1u<<j)) && !(cl.items & (1u<<j)))
 				cl.item_gettime[j] = cl.time;
 		cl.items = i;
 	}
@@ -798,10 +798,10 @@ void CL_ParseClientdata (void)
 
 	for (i = 0; i < 4; i++)
 	{
-		j = MSG_ReadByte ();
-		if (cl.stats[STAT_SHELLS+i] != j)
+		uint32_t msgByte = MSG_ReadByte ();
+		if (cl.stats[STAT_SHELLS+i] != msgByte)
 		{
-			cl.stats[STAT_SHELLS+i] = j;
+			cl.stats[STAT_SHELLS+i] = msgByte;
 			Sbar_Changed ();
 		}
 	}

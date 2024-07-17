@@ -25,7 +25,7 @@ set($ENV{DEBUG} 1)
 include_directories(${CMAKE_SOURCE_DIR}/gl4es/include)
 
 # Build configurations
-set(CMAKE_C_FLAGS "-Wall -Wno-trigraphs -pthread -sPTHREAD_POOL_SIZE=8 --use-port=sdl2 -sFULL_ES2=1 -sMAX_WEBGL_VERSION=2 -Wl,--error-limit=0 -sSTACK_OVERFLOW_CHECK=2 -fsanitize=address -fsanitize=undefined -sINITIAL_MEMORY=1024MB -sSTACK_SIZE=512MB -sALLOW_MEMORY_GROWTH  --embed-file=../id1@/id1")
+set(CMAKE_C_FLAGS "-Wall -Wno-trigraphs -pthread -sPTHREAD_POOL_SIZE=4 -sFULL_ES2=1 --use-port=sdl2  -sMAX_WEBGL_VERSION=2 -sSTACK_OVERFLOW_CHECK=2 -fsanitize=address -fsanitize=undefined -sINITIAL_MEMORY=512MB -sSTACK_SIZE=16MB -sALLOW_MEMORY_GROWTH --embed-file=../id1@/id1")
 
 if(DEFINED ENV{DEBUG} AND "$ENV{DEBUG}" STREQUAL "1")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DDEBUG -g -gsource-map")
@@ -166,53 +166,53 @@ set(SOURCES
 )
 
 # Add executable
-add_executable(ironwail ${SOURCES})
-set_target_properties(ironwail PROPERTIES OUTPUT_NAME "ironwail")
-set_target_properties(ironwail PROPERTIES SUFFIX ".html")
+add_executable(quakespasm ${SOURCES})
+set_target_properties(quakespasm PROPERTIES OUTPUT_NAME "quakespasm")
+set_target_properties(quakespasm PROPERTIES SUFFIX ".html")
 add_definitions(-DWITHOUT_CURL -DDEBUG)
 
 # Link Libraries
-target_link_libraries(ironwail ${CMAKE_SOURCE_DIR}/gl4es/libGL.a)
-target_link_options(ironwail PUBLIC "LINKER:-lGL")
+target_link_libraries(quakespasm ${CMAKE_SOURCE_DIR}/gl4es/libGL.a)
+target_link_options(quakespasm PUBLIC "LINKER:-lGL")
 
 if(USE_CODEC_FLAC)
-    target_link_libraries(ironwail FLAC)
+    target_link_libraries(quakespasm FLAC)
 endif()
 
 if(USE_CODEC_VORBIS)
     if(VORBISLIB STREQUAL "vorbis")
         add_definitions(-DUSE_VORBIS=1 -DUSE_OGG=1)
 
-    # target_link_libraries(ironwail vorbisfile vorbis ogg)
+    # target_link_libraries(quakespasm vorbisfile vorbis ogg)
     elseif(VORBISLIB STREQUAL "tremor")
         add_definitions(-DVORBIS_USE_TREMOR)
-        target_link_libraries(ironwail vorbisidec ogg)
+        target_link_libraries(quakespasm vorbisidec ogg)
     endif()
 endif()
 
 if(USE_CODEC_MP3)
     if(MP3LIB STREQUAL "mad")
-    # target_link_libraries(ironwail mad)
+    # target_link_libraries(quakespasm mad)
     elseif(MP3LIB STREQUAL "mpg123")
-        target_link_libraries(ironwail mpg123)
+        target_link_libraries(quakespasm mpg123)
     endif()
 endif()
 
 if(USE_CODEC_MIKMOD)
-    target_link_libraries(ironwail mikmod)
+    target_link_libraries(quakespasm mikmod)
 endif()
 
 if(USE_CODEC_XMP)
-    target_link_libraries(ironwail xmp)
+    target_link_libraries(quakespasm xmp)
 endif()
 
 if(USE_CODEC_MODPLUG)
-    target_link_libraries(ironwail modplug)
+    target_link_libraries(quakespasm modplug)
 endif()
 
 if(USE_CODEC_UMX)
-    target_compile_definitions(ironwail PRIVATE USE_CODEC_UMX)
+    target_compile_definitions(quakespasm PRIVATE USE_CODEC_UMX)
 endif()
 
 # Install rules
-install(TARGETS ironwail DESTINATION /usr/local/games/quake)
+install(TARGETS quakespasm DESTINATION /usr/local/games/quake)

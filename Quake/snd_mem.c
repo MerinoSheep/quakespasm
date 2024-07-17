@@ -75,7 +75,7 @@ static void ResampleSfx (sfx_t *sfx, int inrate, int inwidth, byte *data)
 			if (inwidth == 2)
 				sample = LittleShort ( ((short *)data)[srcsample] );
 			else
-				sample = (int)( (unsigned char)(data[srcsample]) - 128) << 8;
+				sample = (int)( (unsigned char)(data[srcsample]) - 128) << 8; //TODO check if this is emscripten specific
 			if (sc->width == 2)
 				((short *)sc->data)[i] = sample;
 			else
@@ -192,7 +192,7 @@ static int GetLittleLong (void)
 	val = *data_p;
 	val = val + (*(data_p+1)<<8);
 	val = val + (*(data_p+2)<<16);
-	val = val + (*(data_p+3)<<24);
+	val = val + ((uint32_t)(*(data_p+3))<<24);
 	data_p += 4;
 	return val;
 }
