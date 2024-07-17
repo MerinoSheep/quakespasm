@@ -62,12 +62,9 @@ static int		nummodes;
 
 static qboolean	vid_initialized = false;
 
-#if defined(USE_SDL2)
+
 static SDL_Window	*draw_context;
 static SDL_GLContext	gl_context;
-#else
-static SDL_Surface	*draw_context;
-#endif
 
 static qboolean	vid_locked = false; //johnfitz
 static qboolean	vid_changed = false;

@@ -35,13 +35,10 @@ static void Sys_AtExit (void)
 
 static void Sys_InitSDL (void)
 {
-#if defined(USE_SDL2)
+
 	SDL_version v;
 	SDL_version *sdl_version = &v;
 	SDL_GetVersion(&v);
-#else
-	const SDL_version *sdl_version = SDL_Linked_Version();
-#endif
 
 	Sys_Printf("Found SDL version %i.%i.%i\n",sdl_version->major,sdl_version->minor,sdl_version->patch);
 
