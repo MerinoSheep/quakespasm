@@ -43,13 +43,9 @@ void PL_SetWindowIcon (void)
 		return;
 	/* make pure magenta (#ff00ff) tranparent */
 	colorkey = SDL_MapRGB(icon->format, 255, 0, 255);
-#if defined(USE_SDL2)
+
 	SDL_SetColorKey(icon, SDL_TRUE, colorkey);
 	SDL_SetWindowIcon((SDL_Window*) VID_GetWindow(), icon);
-#else
-	SDL_SetColorKey(icon, SDL_SRCCOLORKEY, colorkey);
-	SDL_WM_SetIcon(icon, NULL);
-#endif
 	SDL_FreeSurface(icon);
 }
 
@@ -61,7 +57,7 @@ void PL_VID_Shutdown (void)
 char *PL_GetClipboardData (void)
 {
 	char *data = NULL;
-#if defined(USE_SDL2)
+
 	char *cliptext = SDL_GetClipboardText();
 
 	if (cliptext != NULL)
@@ -75,7 +71,7 @@ char *PL_GetClipboardData (void)
 		data = (char *) Z_Malloc((int)size);
 		q_strlcpy (data, cliptext, size);
 	}
-#endif
+
 
 	return data;
 }

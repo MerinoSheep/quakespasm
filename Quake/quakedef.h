@@ -314,7 +314,6 @@ void DemoList_Init (void);
 void ExtraMaps_NewGame (void);
 void DemoList_Rebuild (void);
 
-// void initialize_gl4es();
 
 extern int		current_skill;	// skill level for currently loaded level (in case
 					//  the user changes the cvar while the level is
