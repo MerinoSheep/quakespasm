@@ -25,10 +25,10 @@ set($ENV{DEBUG} 1)
 include_directories(${CMAKE_SOURCE_DIR}/gl4es/include)
 
 # Build configurations
-set(CMAKE_C_FLAGS "-Wall -Wno-trigraphs -pthread -sPTHREAD_POOL_SIZE=4 --use-port=sdl2  -sMAX_WEBGL_VERSION=2 -sSTACK_OVERFLOW_CHECK=2 -fsanitize=address -fsanitize=undefined --embed-file=../id1@/id1")
+set(CMAKE_C_FLAGS "-Wall -Wno-trigraphs -pthread -sPTHREAD_POOL_SIZE=4 --use-port=sdl2  -sMAX_WEBGL_VERSION=2 --embed-file=../id1@/id1")
 
 if(DEFINED ENV{DEBUG} AND "$ENV{DEBUG}" STREQUAL "1")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DDEBUG -g -gsource-map")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DDEBUG -g -gsource-map -sSTACK_OVERFLOW_CHECK=2 -fsanitize=address -fsanitize=undefined")
 else()
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DNDEBUG -O2")
 endif()

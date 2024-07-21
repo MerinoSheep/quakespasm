@@ -1243,15 +1243,6 @@ static void GL_Init (void)
 
 	GL_CheckExtensions (); //johnfitz
 
-#ifdef __APPLE__
-	// ericw -- enable multi-threaded OpenGL, gives a decent FPS boost.
-	// https://developer.apple.com/library/mac/technotes/tn2085/
-	if (host_parms->numcpus > 1 &&
-	    kCGLNoError != CGLEnable(CGLGetCurrentContext(), kCGLCEMPEngine))
-	{
-		Con_Warning ("Couldn't enable multi-threaded OpenGL");
-	}
-#endif
 
 	//johnfitz -- intel video workarounds from Baker
 	if (!strcmp(gl_vendor, "Intel"))
