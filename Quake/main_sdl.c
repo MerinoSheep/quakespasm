@@ -122,7 +122,7 @@ int main(int argc, char *argv[])
 	Host_Init();
 	oldtime = Sys_DoubleTime();
 	#ifdef __EMSCRIPTEN__
-    emscripten_set_main_loop(mainloop, 30, 1);
+    emscripten_set_main_loop(mainloop, 0, 1);
     #else
     while (1) { mainloop(); }
     #endif

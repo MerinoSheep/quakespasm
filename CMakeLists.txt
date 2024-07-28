@@ -18,16 +18,16 @@ set(VORBISLIB "vorbis" CACHE STRING "Library to use for OGG decoding (vorbis or 
 
 # C Standard
 set_property(GLOBAL PROPERTY C_STANDARD 11)
-set($ENV{LD_LIBRARY_PATH} ${CMAKE_SOURCE_DIR}/gl4es)
-set($ENV{EMCC_DEBUG} 1)
-set($ENV{EMCC_STRICT} 1)
-set($ENV{DEBUG} 1)
+set(ENV{LD_LIBRARY_PATH} ${CMAKE_SOURCE_DIR}/gl4es)
+set(ENV{EMCC_DEBUG} 1)
+set(ENV{EMCC_STRICT} 1)
+set(ENV{DEBUG} 1)
 include_directories(${CMAKE_SOURCE_DIR}/gl4es/include)
 
 # Build configurations
 set(CMAKE_C_FLAGS "-Wall -Wno-trigraphs -pthread -sPTHREAD_POOL_SIZE=4 --use-port=sdl2  -sMAX_WEBGL_VERSION=2 --embed-file=../id1@/id1")
 
-if(DEFINED ENV{DEBUG} AND "$ENV{DEBUG}" STREQUAL "1")
+if(DEFINED ENV{DEBUG})
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DDEBUG -g -gsource-map -sSTACK_OVERFLOW_CHECK=2 -fsanitize=address -fsanitize=undefined")
 else()
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DNDEBUG -O2")
